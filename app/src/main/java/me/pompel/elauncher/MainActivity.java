@@ -43,6 +43,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,6 +198,22 @@ public class MainActivity extends AppCompatActivity {
 
         dateDisplay = findViewById(R.id.dateDisplay);
         updateDateDisplay();
+
+        // Inside your onCreate method, after initializing dateDisplay
+
+        dateDisplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_APP_CALENDAR);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    // handle the case where no calendar app is found
+                    Toast.makeText(MainActivity.this, "No calendar app found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // if it does not have USAGE_STATS and it's the first launch, open settings
         if (!hasUsageStatsPermission() && !prefs.getBoolean("firstLaunch", false)) {
@@ -357,41 +374,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void homeUpdateUsage() {
-        LinearLayout homescreen = findViewById(R.id.HomeScreen);
-        Set<String> activeProcessPackages = listActiveProcessPackages();
-
-        int length = hasUsageStatsPermission() ?
-                homescreen.getChildCount() :
-                homescreen.getChildCount()-1;
-
-        for (int i = 0; i < length; i++) {
-            View view = homescreen.getChildAt(i);
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-                String packageName = prefs.getString("p" + textView.getTag(), "");
-                if (activeProcessPackages.contains(packageName)) {
-                    SpannableString spannableAppName = new SpannableString(textView.getText());
-                    spannableAppName.setSpan(new StyleSpan(Typeface.BOLD), 0, spannableAppName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    textView.setText(spannableAppName);
-                }
-            }
-        }
-
-        if (hasUsageStatsPermission()) {
-            View view = homescreen.getChildAt(homescreen.getChildCount()-1);
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-                textView.setText(getNameByPackageName(lastActiveProcessPackage()));
-            }
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         BigmeShims.queryLauncherProvider(this);
-        homeUpdateUsage();
         updateDateDisplay();
     }
 
