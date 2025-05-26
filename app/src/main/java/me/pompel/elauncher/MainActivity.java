@@ -11,15 +11,12 @@ import android.app.AppOpsManager;
 import android.app.AlertDialog;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +40,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private void changeLayout(boolean home, boolean animated) {
         if (!home) {
             loadApps();
-        };
+        }
         keyboardAction(home);
         if (animated) {
             Transition transition = new Fade();
@@ -198,6 +196,24 @@ public class MainActivity extends AppCompatActivity {
         dateDisplay = findViewById(R.id.dateDisplay);
         updateDateDisplay();
 
+        // Inside your onCreate method, after initializing dateDisplay
+
+        dateDisplay.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_APP_CALENDAR);
+            String targetPackage = "com.mudita.calendar";
+            Intent launchIntent_mudita = getPackageManager().getLaunchIntentForPackage(targetPackage);
+            if (launchIntent_mudita != null) {
+                startActivity(launchIntent_mudita);
+            } else if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+            else {
+                // handle the case where no calendar app is found
+                Toast.makeText(MainActivity.this, "No calendar app found", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // if it does not have USAGE_STATS and it's the first launch, open settings
         if (!hasUsageStatsPermission() && !prefs.getBoolean("firstLaunch", false)) {
             Intent usageAccessIntent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
@@ -210,8 +226,6 @@ public class MainActivity extends AppCompatActivity {
 
         BigmeShims.queryLauncherProvider(this);
         Window window = getWindow();
-        //window.addFlags(FLAG_LAYOUT_NO_LIMITS);
-        //window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getColorFromAttr(androidx.appcompat.R.attr.background));
         window.setNavigationBarColor(getColorFromAttr(androidx.appcompat.R.attr.background));
 
@@ -284,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout homescreen = findViewById(R.id.HomeScreen);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         CharSequence[] alertApps = appNames.toArray(new CharSequence[0]);
-        int i = 0;
+        int i;
         for (i = 0; i < prefs.getInt(NUMBER_OF_APPS, 8); i++) {
             TextView textView = new TextView(this);
             textView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
@@ -357,41 +371,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void homeUpdateUsage() {
-        LinearLayout homescreen = findViewById(R.id.HomeScreen);
-        Set<String> activeProcessPackages = listActiveProcessPackages();
-
-        int length = hasUsageStatsPermission() ?
-                homescreen.getChildCount() :
-                homescreen.getChildCount()-1;
-
-        for (int i = 0; i < length; i++) {
-            View view = homescreen.getChildAt(i);
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-                String packageName = prefs.getString("p" + textView.getTag(), "");
-                if (activeProcessPackages.contains(packageName)) {
-                    SpannableString spannableAppName = new SpannableString(textView.getText());
-                    spannableAppName.setSpan(new StyleSpan(Typeface.BOLD), 0, spannableAppName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    textView.setText(spannableAppName);
-                }
-            }
-        }
-
-        if (hasUsageStatsPermission()) {
-            View view = homescreen.getChildAt(homescreen.getChildCount()-1);
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-                textView.setText(getNameByPackageName(lastActiveProcessPackage()));
-            }
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         BigmeShims.queryLauncherProvider(this);
-        homeUpdateUsage();
         updateDateDisplay();
     }
 
