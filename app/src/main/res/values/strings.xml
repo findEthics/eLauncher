@@ -4,4 +4,59 @@
     <string name="number_of_apps_title">Number of Apps</string>
     <string name="dark_mode_title">Dark Mode</string>
     <string name="dark_mode_summary">Enable or disable dark mode</string>
+    
+    <!-- Number of apps dropdown options -->
+    <string-array name="number_of_apps_entries">
+        <item>1 App</item>
+        <item>2 Apps</item>
+        <item>3 Apps</item>
+        <item>4 Apps</item>
+        <item>5 Apps</item>
+        <item>6 Apps</item>
+        <item>7 Apps</item>
+        <item>8 Apps</item>
+        <item>9 Apps</item>
+        <item>10 Apps</item>
+        <item>11 Apps</item>
+        <item>12 Apps</item>
+        <item>13 Apps</item>
+        <item>14 Apps</item>
+        <item>15 Apps</item>
+        <item>16 Apps</item>
+        <item>17 Apps</item>
+        <item>18 Apps</item>
+        <item>19 Apps</item>
+        <item>20 Apps</item>
+        <item>21 Apps</item>
+        <item>22 Apps</item>
+        <item>23 Apps</item>
+        <item>24 Apps</item>
+    </string-array>
+    
+    <string-array name="number_of_apps_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+    </string-array>
 </resources>

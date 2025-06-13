@@ -1,13 +1,12 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <SeekBarPreference
+    <DropDownPreference
         app:key="number_of_apps_preference"
         app:title="@string/number_of_apps_title"
         app:summary="@string/number_of_apps_summary"
         app:defaultValue="8"
-        app:min="0"
-        android:max="24"
-        app:showSeekBarValue="true" />
+        app:entries="@array/number_of_apps_entries"
+        app:entryValues="@array/number_of_apps_values" />
     <SwitchPreferenceCompat
         app:key="dark_mode_preference"
         app:title="@string/dark_mode_title"

@@ -69,6 +69,24 @@ public class MainActivity extends AppCompatActivity {
     private static final String ELAUNCHER_PACKAGE = "me.pompel.elauncher";
     private recyclerAdapter adapter;
 
+    /**
+     * Helper method to get the number of apps preference value as integer.
+     * Handles both legacy integer values and new string values from DropDownPreference.
+     */
+    private int getNumberOfApps() {
+        try {
+            // First try to get as string (new DropDownPreference format)
+            String stringValue = prefs.getString(NUMBER_OF_APPS, "8");
+            return Integer.parseInt(stringValue);
+        } catch (ClassCastException e) {
+            // Fallback to integer (legacy SeekBarPreference format)
+            return prefs.getInt(NUMBER_OF_APPS, 8);
+        } catch (NumberFormatException e) {
+            // If string is not a valid number, return default
+            return 8;
+        }
+    }
+
     private void loadApps() {
         appList.clear();
 
@@ -285,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         CharSequence[] alertApps = appNames.toArray(new CharSequence[0]);
         int i = 0;
-        for (i = 0; i < prefs.getInt(NUMBER_OF_APPS, 8); i++) {
+        for (i = 0; i < getNumberOfApps(); i++) {
             TextView textView = new TextView(this);
             textView.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary));
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 45);
@@ -571,7 +589,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<String> getHomescreenPackages() {
-        int len = prefs.getInt(NUMBER_OF_APPS, 8);
+        int len = getNumberOfApps();
         List<String> homescreenPackages = new LinkedList<>();
 
         for (int i = 0; i < len; i++) {
